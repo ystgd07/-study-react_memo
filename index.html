@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Vanilla DOM Performance Test</title>
+  <style>
+    table { border-collapse: collapse; }
+    td { border: 1px solid #000; padding: 5px; }
+  </style>
+</head>
+<body>
+  <button id="updateBtn">Update Cells</button>
+  <div id="result"></div>
+  <div id="tableContainer"></div>
+  <script>
+    const ROWS = 200;
+    const COLS = 20;
+    
+    // 테이블 생성
+    const tableContainer = document.getElementById('tableContainer');
+    const table = document.createElement('table');
+    for (let i = 0; i < ROWS; i++) {
+      const tr = document.createElement('tr');
+      for (let j = 0; j < COLS; j++) {
+        const td = document.createElement('td');
+        td.id = `cell-${i}-${j}`;
+        td.textContent = `${i}-${j}`;
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    }
+    tableContainer.appendChild(table);
+
+    // 업데이트 함수: 100개 랜덤 셀 업데이트
+    function updateCells() {
+      const startTime = performance.now();
+      for (let k = 0; k < 100; k++) {
+        const randomRow = Math.floor(Math.random() * ROWS);
+        const randomCol = Math.floor(Math.random() * COLS);
+        const cell = document.getElementById(`cell-${randomRow}-${randomCol}`);
+        cell.textContent = 'Updated ' + Math.floor(Math.random() * 1000);
+      }
+      // 업데이트 후, 다음 페인트 시점에서 시간 측정
+      requestAnimationFrame(() => {
+        const duration = performance.now() - startTime;
+        document.getElementById('result').textContent =
+          `Vanilla DOM Update Duration: ${duration.toFixed(2)}ms`;
+      });
+    }
+
+    document.getElementById('updateBtn').addEventListener('click', updateCells);
+  </script>
+</body>
+</html>
